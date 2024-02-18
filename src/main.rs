@@ -1,20 +1,30 @@
 /*
-* TODOs:
-* - [x] Add Asserts at start
-*   - [x] Assert that all numbers have the same height
-* - [x] Better image gen
-*   - [x] more padding
-*   - [x] grey border
-* - [x] Add clap
-*   - [x] Concigure max number of digits
-* - [ ] Add logging
+* # TODOs:
+*
+* Too fast moving to bother with GH Issues rn
+*
+* ## General
+* - [ ] Add logging with tracing
 *   - [ ] ALso replace all prints
-* - [x] CI
 * - [ ] Proper error management with anyhow+thiserror
+* - [ ] Get cargo audit and cargo outdated running
+*
+*
+* ## Image gen
 * - [ ] Make the counter smaller
 *   - [ ] decrease img size
 *   - [ ] decrease padding
 *   - [ ] decrease border size
+*
+* ## REST API
+* - [ ] Find out a Rust framework to use
+* - [ ] Get a health check API endpoint returning 200
+* - [ ] Find out how to return an Image
+* - [ ] Create a debug endpoint where one can query any number and get it
+* - [ ] Create a `/counter/<ID>` endpoint that always returns the same number
+* 
+* ## sqlite
+* todo
  */
 
 mod cli;
