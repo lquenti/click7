@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
-use image::{RgbaImage, ImageBuffer, ImageFormat, ImageError};
+use image::{ImageBuffer, ImageError, ImageFormat, RgbaImage};
 use lazy_static::lazy_static;
-
 
 const DIGIT_BYTES: [&[u8]; 10] = [
     include_bytes!("../assets/0.png"),
@@ -40,8 +39,7 @@ pub fn init_lazy_static() {
 }
 
 pub fn all_same_size() -> bool {
-    let mut heights = DIGIT_IMAGES.iter()
-        .map(|(_, image)| image.height());
+    let mut heights = DIGIT_IMAGES.iter().map(|(_, image)| image.height());
 
     let first = heights.next().unwrap();
     heights.all(|height| height == first)
@@ -66,7 +64,7 @@ pub fn generate_image(n: u64, max_digits: u8) -> RgbaImage {
             curr /= 10;
         }
         digits_without_prefix.reverse();
-        
+
         // Fill with zeros on the left
         let missing_zeros = (max_digits as i32) - (digits_without_prefix.len() as i32);
         if missing_zeros > 0 {
@@ -80,15 +78,14 @@ pub fn generate_image(n: u64, max_digits: u8) -> RgbaImage {
     }
 
     // Convert digits to images
-    let digits: Vec<&RgbaImage> = digits.into_iter()
+    let digits: Vec<&RgbaImage> = digits
+        .into_iter()
         .map(|n| DIGIT_IMAGES.get(&n).unwrap())
         .collect();
 
     // Create buffer
     let height: u32 = digits[0].height();
-    let total_width: u32 = digits.iter()
-        .map(|image| image.width())
-        .sum();
+    let total_width: u32 = digits.iter().map(|image| image.width()).sum();
     let mut image: RgbaImage = ImageBuffer::new(total_width, height);
 
     // add the digits

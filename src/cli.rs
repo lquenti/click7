@@ -12,4 +12,3 @@ pub struct Args {
     #[arg(short)]
     pub number: u64,
 }
-
