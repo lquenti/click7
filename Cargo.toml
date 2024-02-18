@@ -2,9 +2,14 @@
 name = "click7"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "website click counter with 7 segment display"
+homepage = "https://github.com/lquenti/click7"
+repository = "https://github.com/lquenti/click7"
+license = "MIT"
+authors = ["Lars Quentin <lars@lquenti.de>"]
+readme = "./README.md"
 
 [dependencies]
+clap = { version = "4.5.1", features = ["derive"] }
 image = "0.24.8"
 lazy_static = "1.4.0"
