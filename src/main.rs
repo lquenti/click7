@@ -20,9 +20,11 @@
 * ## REST API
 * - [x] Find out a Rust framework to use
 * - [x] Get a health check API endpoint returning 200
-* - [ ] Find out how to return an Image
+* - [x] Find out how to return an Image
 * - [ ] Create a debug endpoint where one can query any number and get it
+*  - [ ] properly refactor it
 * - [ ] Create a `/counter/<ID>` endpoint that always returns the same number
+* - [ ] add a `/` that explains the project in HTML
 *
 * ## sqlite
 * todo
@@ -33,7 +35,7 @@ mod img_gen;
 
 use axum::{
     http::{header::CONTENT_TYPE, Response, StatusCode},
-    routing, Router,
+    routing, Router, extract::Path,
 };
 use clap::Parser;
 use image::ImageEncoder;
@@ -41,8 +43,8 @@ use img_gen::generate_image;
 
 use crate::cli::Args;
 
-async fn debug() -> (Response<()>, Vec<u8>) {
-    let img = generate_image(1337, 7, 20, 20);
+async fn debug(Path(id): Path<u32>) -> (Response<()>, Vec<u8>) {
+    let img = generate_image(id, 7, 20, 20);
     let mut bytes: Vec<u8> = vec![];
 
     image::codecs::png::PngEncoder::new(&mut bytes)
@@ -70,7 +72,7 @@ async fn main() {
     /* Define routes */
     let app = Router::new()
         .route("/health_check", routing::get(|| async { "Ok" }))
-        .route("/debug", routing::get(debug));
+        .route("/debug/:id", routing::get(debug));
 
     /* start server */
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
