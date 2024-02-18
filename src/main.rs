@@ -2,9 +2,9 @@
 * TODOs:
 * - [x] Add Asserts at start
 *   - [x] Assert that all numbers have the same height
-* - [ ] Better image gen
+* - [x] Better image gen
 *   - [x] more padding
-*   - [ ] grey border
+*   - [x] grey border
 * - [x] Add clap
 *   - [x] Concigure max number of digits
 * - [ ] Add logging

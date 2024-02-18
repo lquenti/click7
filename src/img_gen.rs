@@ -84,11 +84,11 @@ pub fn generate_image(n: u32, max_digits: u8, padding: u32, border: u32) -> Rgba
         .collect();
 
     /*
-    * How it works:
-    * - First a gray background for the border
-    * - Then overlay a smaller black one for the padding
-    * - Then, with padding in mind, put the digits on there
-    */
+     * How it works:
+     * - First a gray background for the border
+     * - Then overlay a smaller black one for the padding
+     * - Then, with padding in mind, put the digits on there
+     */
     let black_background_height = digits[0].height() + 2 * padding;
     let digit_width: u32 = digits.iter().map(|image| image.width()).sum();
     let padding_width: u32 = (digits.len() as u32 + 1) * padding;
@@ -103,12 +103,22 @@ pub fn generate_image(n: u32, max_digits: u8, padding: u32, border: u32) -> Rgba
         ImageBuffer::from_pixel(black_background_width, black_background_height, BLACK);
 
     // Overlay the black packground for the number padding
-    image::imageops::overlay(&mut grey_background, &black_blackground, border as i64, border as i64);
+    image::imageops::overlay(
+        &mut grey_background,
+        &black_blackground,
+        border as i64,
+        border as i64,
+    );
 
     // add the digits
-    let mut offset: u32 = border+padding;
+    let mut offset: u32 = border + padding;
     for digit in digits {
-        image::imageops::overlay(&mut grey_background, digit, offset as i64, (border+padding) as i64);
+        image::imageops::overlay(
+            &mut grey_background,
+            digit,
+            offset as i64,
+            (border + padding) as i64,
+        );
         offset += digit.width() + padding;
     }
 
