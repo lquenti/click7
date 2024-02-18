@@ -34,7 +34,7 @@ fn main() -> Result<(), image::ImageError> {
         panic!("Not all images have the same height!");
     }
 
-    let new_img = img_gen::generate_image(args.number, args.digits, args.padding);
+    let new_img = img_gen::generate_image(args.number, args.digits, args.padding, args.border);
     let _ = new_img.save("./new.png");
 
     Ok(())

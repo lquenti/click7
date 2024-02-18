@@ -15,4 +15,8 @@ pub struct Args {
     /// The padding around each of the digits in pixels
     #[arg(short, long, default_value_t = 20)]
     pub padding: u32,
+
+    /// The thickness of the grey border
+    #[arg(short, long, default_value_t = 20)]
+    pub border: u32,
 }
