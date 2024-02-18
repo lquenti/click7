@@ -5,8 +5,8 @@
 * - [ ] Better image gen
 *   - [ ] more padding
 *   - [ ] grey border
-* - [ ] Add clap
-*   - [ ] Concigure max number of digits
+* - [x] Add clap
+*   - [x] Concigure max number of digits
 * - [ ] Add logging
 *   - [ ] ALso replace all prints
 * - [ ] CI

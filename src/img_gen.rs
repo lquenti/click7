@@ -48,16 +48,14 @@ pub fn all_same_size() -> bool {
 }
 
 pub fn generate_image(n: u64, max_digits: u8) -> RgbaImage {
-    let max_number: u64 = (10 as u64).pow(max_digits.into()) - 1;
+    let max_number: u64 = 10_u64.pow(max_digits.into()) - 1;
 
     // convert number into digits
     let mut digits = vec![];
     if n > max_number {
         // If too large, just put nines there
         println!("Overflow: {} > {}", n, max_number);
-        for _ in 0..max_digits {
-            digits.push(9 as u8);
-        }
+        digits = vec![9_u8; max_digits as usize];
     } else {
         // cut off last number, add
         let mut digits_without_prefix = vec![];
