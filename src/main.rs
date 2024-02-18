@@ -3,14 +3,18 @@
 * - [x] Add Asserts at start
 *   - [x] Assert that all numbers have the same height
 * - [ ] Better image gen
-*   - [ ] more padding
+*   - [x] more padding
 *   - [ ] grey border
 * - [x] Add clap
 *   - [x] Concigure max number of digits
 * - [ ] Add logging
 *   - [ ] ALso replace all prints
-* - [ ] CI
+* - [x] CI
 * - [ ] Proper error management with anyhow+thiserror
+* - [ ] Make the counter smaller
+*   - [ ] decrease img size
+*   - [ ] decrease padding
+*   - [ ] decrease border size
  */
 
 mod cli;
@@ -30,7 +34,7 @@ fn main() -> Result<(), image::ImageError> {
         panic!("Not all images have the same height!");
     }
 
-    let new_img = img_gen::generate_image(args.number, args.digits);
+    let new_img = img_gen::generate_image(args.number, args.digits, args.padding);
     let _ = new_img.save("./new.png");
 
     Ok(())

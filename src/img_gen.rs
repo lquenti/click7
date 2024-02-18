@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use image::{ImageBuffer, ImageError, ImageFormat, RgbaImage};
+use image::{ImageBuffer, ImageError, ImageFormat, Rgba, RgbaImage};
 use lazy_static::lazy_static;
 
 const DIGIT_BYTES: [&[u8]; 10] = [
@@ -45,12 +45,12 @@ pub fn all_same_size() -> bool {
     heights.all(|height| height == first)
 }
 
-pub fn generate_image(n: u64, max_digits: u8) -> RgbaImage {
+pub fn generate_image(n: u32, max_digits: u8, padding: u32) -> RgbaImage {
     let max_number: u64 = 10_u64.pow(max_digits.into()) - 1;
 
     // convert number into digits
     let mut digits = vec![];
-    if n > max_number {
+    if (n as u64) > max_number {
         // If too large, just put nines there
         println!("Overflow: {} > {}", n, max_number);
         digits = vec![9_u8; max_digits as usize];
@@ -69,9 +69,6 @@ pub fn generate_image(n: u64, max_digits: u8) -> RgbaImage {
         let missing_zeros = (max_digits as i32) - (digits_without_prefix.len() as i32);
         if missing_zeros > 0 {
             let mut zerovec = vec![0; missing_zeros as usize];
-            // TODO: HOW DO I HERE GET DIGITS AS ZEROVEC + DIGITS AS ONE VECTOR
-            // like
-            // digits = zerovec + digits
             zerovec.extend(digits_without_prefix.iter());
             digits = zerovec;
         }
@@ -84,15 +81,18 @@ pub fn generate_image(n: u64, max_digits: u8) -> RgbaImage {
         .collect();
 
     // Create buffer
-    let height: u32 = digits[0].height();
-    let total_width: u32 = digits.iter().map(|image| image.width()).sum();
-    let mut image: RgbaImage = ImageBuffer::new(total_width, height);
+    let total_height: u32 = digits[0].height() + 2 * padding;
+    let digit_width: u32 = digits.iter().map(|image| image.width()).sum();
+    let padding_width: u32 = (digits.len() as u32) * padding;
+    let total_width: u32 = digit_width + padding_width;
+    let mut image: RgbaImage =
+        ImageBuffer::from_pixel(total_width, total_height, Rgba([0_u8, 0_u8, 0_u8, 255_u8]));
 
     // add the digits
-    let mut offset: u32 = 0;
+    let mut offset: u32 = padding;
     for digit in digits {
-        image::imageops::overlay(&mut image, digit, offset as i64, 0);
-        offset += digit.width();
+        image::imageops::overlay(&mut image, digit, offset as i64, padding as i64);
+        offset += digit.width() + padding;
     }
 
     image
