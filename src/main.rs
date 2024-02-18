@@ -1,18 +1,121 @@
-use image::{RgbaImage, ImageBuffer, ImageFormat};
+use std::{collections::HashMap, env};
 
-const ZERO: &[u8] = include_bytes!("../assets/0.png");
-const ONE: &[u8] = include_bytes!("../assets/1.png");
-const TWO: &[u8] = include_bytes!("../assets/2.png");
-const THREE: &[u8] = include_bytes!("../assets/3.png");
-const FOUR: &[u8] = include_bytes!("../assets/4.png");
-const FIVE: &[u8] = include_bytes!("../assets/5.png");
-const SIX: &[u8] = include_bytes!("../assets/6.png");
-const SEVEN: &[u8] = include_bytes!("../assets/7.png");
-const EIGHT: &[u8] = include_bytes!("../assets/8.png");
-const NINE: &[u8] = include_bytes!("../assets/9.png");
+use image::{RgbaImage, ImageBuffer, ImageFormat, ImageError};
+use lazy_static::lazy_static;
+
+/*
+* TODOs:
+* - [ ] Add Asserts at start
+*   - [ ] Assert that all numbers have the same height
+* - [ ] Better image gen
+*   - [ ] more padding
+*   - [ ] grey border
+* - [ ] Add clippy
+*   - [ ] Concigure max number of digits
+* - [ ] Add logging
+*   - [ ] ALso replace all prints
+* - [ ] CI
+* - [ ] Proper error management with anyhow+thiserror
+ */
+
+const DIGIT_BYTES: [&[u8]; 10] = [
+    include_bytes!("../assets/0.png"),
+    include_bytes!("../assets/1.png"),
+    include_bytes!("../assets/2.png"),
+    include_bytes!("../assets/3.png"),
+    include_bytes!("../assets/4.png"),
+    include_bytes!("../assets/5.png"),
+    include_bytes!("../assets/6.png"),
+    include_bytes!("../assets/7.png"),
+    include_bytes!("../assets/8.png"),
+    include_bytes!("../assets/9.png"),
+];
+
+lazy_static! {
+    static ref DIGIT_IMAGES: HashMap<u8, RgbaImage> = {
+        let mut map = HashMap::new();
+        for (i, &bytes) in DIGIT_BYTES.iter().enumerate() {
+            map.insert(i as u8, load_png(bytes).unwrap());
+        }
+        map
+    };
+}
+
+fn load_png(bytes: &[u8]) -> Result<RgbaImage, ImageError> {
+    let img = image::load_from_memory_with_format(bytes, ImageFormat::Png)?;
+    Ok(img.into_rgba8())
+}
+
+fn init_lazy_static() {
+    // ensure that all are loaded
+    for (_, image) in DIGIT_IMAGES.iter() {
+        let _width = image.width();
+    }
+}
+
+fn generate_image(n: u64, max_digits: u8) -> RgbaImage {
+    let max_number: u64 = (10 as u64).pow(max_digits.into()) - 1;
+
+    // convert number into digits
+    let mut digits = vec![];
+    if n > max_number {
+        // If too large, just put nines there
+        println!("Overflow: {} > {}", n, max_number);
+        for _ in 0..max_digits {
+            digits.push(9 as u8);
+        }
+    } else {
+        // cut off last number, add
+        let mut digits_without_prefix = vec![];
+        let mut curr = n;
+        while curr != 0 {
+            let last_digit = (curr % 10) as u8;
+            digits_without_prefix.push(last_digit);
+            curr /= 10;
+        }
+        digits_without_prefix.reverse();
+        
+        // Fill with zeros on the left
+        let missing_zeros = (max_digits as i32) - (digits_without_prefix.len() as i32);
+        if missing_zeros > 0 {
+            let mut zerovec = vec![0; missing_zeros as usize];
+            // TODO: HOW DO I HERE GET DIGITS AS ZEROVEC + DIGITS AS ONE VECTOR
+            // like
+            // digits = zerovec + digits
+            zerovec.extend(digits_without_prefix.iter());
+            digits = zerovec;
+        }
+    }
+
+    // Convert digits to images
+    let digits: Vec<&RgbaImage> = digits.into_iter()
+        .map(|n| DIGIT_IMAGES.get(&n).unwrap())
+        .collect();
+
+    // Create buffer
+    let height: u32 = digits[0].height();
+    let total_width: u32 = digits.iter()
+        .map(|image| image.width())
+        .sum();
+    let mut image: RgbaImage = ImageBuffer::new(total_width, height);
+
+    // add the digits
+    let mut offset: u32 = 0;
+    for digit in digits {
+        image::imageops::overlay(&mut image, digit, offset as i64, 0);
+        offset += digit.width();
+    }
+
+    image
+}
 
 fn main() -> Result<(), image::ImageError> {
+    init_lazy_static();
+    let num: u64 = env::args().nth(1).unwrap().parse().unwrap();
+    let new_img = generate_image(num, 6);
+    let _ = new_img.save("./new.png");
 
+    /*
     let img1 = image::load_from_memory_with_format(TWO, ImageFormat::Png)?.into_rgba8();
     let img2 = image::load_from_memory_with_format(THREE, ImageFormat::Png)?.into_rgba8();
 
@@ -28,5 +131,6 @@ fn main() -> Result<(), image::ImageError> {
 
 
     println!("Hello, world!");
+    */
     Ok(())
 }
