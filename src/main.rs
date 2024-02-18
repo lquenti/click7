@@ -18,6 +18,11 @@ mod img_gen;
 
 fn main() -> Result<(), image::ImageError> {
     img_gen::init_lazy_static();
+    if !img_gen::all_same_size() {
+        panic!("Not all images have the same height!");
+    }
+
+
     let num: u64 = std::env::args().nth(1).unwrap().parse().unwrap();
     let new_img = img_gen::generate_image(num, 6);
     let _ = new_img.save("./new.png");

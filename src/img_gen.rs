@@ -1,4 +1,4 @@
-use std::{collections::HashMap};
+use std::collections::HashMap;
 
 use image::{RgbaImage, ImageBuffer, ImageFormat, ImageError};
 use lazy_static::lazy_static;
@@ -37,6 +37,14 @@ pub fn init_lazy_static() {
     for (_, image) in DIGIT_IMAGES.iter() {
         let _width = image.width();
     }
+}
+
+pub fn all_same_size() -> bool {
+    let mut heights = DIGIT_IMAGES.iter()
+        .map(|(_, image)| image.height());
+
+    let first = heights.next().unwrap();
+    heights.all(|height| height == first)
 }
 
 pub fn generate_image(n: u64, max_digits: u8) -> RgbaImage {
