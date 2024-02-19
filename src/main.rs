@@ -16,15 +16,16 @@
 *   - [ ] decrease padding
 *   - [ ] decrease border size
 * - [ ] Add a standalone binary that just creates the img
+*   - [ ] Publish that one on crates.io already
 *
 * ## REST API
 * - [x] Find out a Rust framework to use
 * - [x] Get a health check API endpoint returning 200
 * - [x] Find out how to return an Image
-* - [ ] Create a debug endpoint where one can query any number and get it
-*  - [ ] properly refactor it
-* - [ ] Create a `/counter/<ID>` endpoint that always returns the same number
+* - [x] Create a debug endpoint where one can query any number and get it
+*  - [x] properly refactor it
 * - [ ] add a `/` that explains the project in HTML
+* - [ ] Create the actual API after the DB is working
 *
 * ## sqlite
 * todo
@@ -32,36 +33,16 @@
 
 mod cli;
 mod img_gen;
-
-use axum::{
-    http::{header::CONTENT_TYPE, Response, StatusCode},
-    routing, Router, extract::Path,
-};
-use clap::Parser;
-use image::ImageEncoder;
-use img_gen::generate_image;
+mod routes;
 
 use crate::cli::Args;
-
-async fn debug(Path(id): Path<u32>) -> (Response<()>, Vec<u8>) {
-    let img = generate_image(id, 7, 20, 20);
-    let mut bytes: Vec<u8> = vec![];
-
-    image::codecs::png::PngEncoder::new(&mut bytes)
-        .write_image(&img, img.width(), img.height(), image::ColorType::Rgba8)
-        .unwrap();
-    let response = Response::builder()
-        .status(StatusCode::OK)
-        .header(CONTENT_TYPE, "image/png")
-        .body(())
-        .unwrap();
-    (response, bytes)
-}
+use axum::{routing, Router};
+use clap::Parser;
 
 #[tokio::main]
 async fn main() {
     /* Parse CLI args */
-    let args = Args::parse();
+    let _args = Args::parse();
 
     /* init image generator */
     img_gen::init_lazy_static();
@@ -71,8 +52,8 @@ async fn main() {
 
     /* Define routes */
     let app = Router::new()
-        .route("/health_check", routing::get(|| async { "Ok" }))
-        .route("/debug/:id", routing::get(debug));
+        .route("/health_check", routing::get(routes::health_check))
+        .route("/generate/:number", routing::get(routes::generate));
 
     /* start server */
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
