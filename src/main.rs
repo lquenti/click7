@@ -24,7 +24,8 @@
 * - [x] Find out how to return an Image
 * - [x] Create a debug endpoint where one can query any number and get it
 *  - [x] properly refactor it
-* - [ ] add a `/` that explains the project in HTML
+* - [x] add a `/` that explains the project in HTML
+*   - [ ] Add a more beautiful and descriptive website
 * - [ ] Create the actual API after the DB is working
 *
 * ## sqlite
@@ -52,6 +53,7 @@ async fn main() {
 
     /* Define routes */
     let app = Router::new()
+        .route("/", routing::get(routes::index))
         .route("/health_check", routing::get(routes::health_check))
         .route("/generate/:number", routing::get(routes::generate));
 

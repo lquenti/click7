@@ -1,11 +1,17 @@
 use crate::img_gen::generate_image;
 use image::ImageEncoder;
 
+const INDEX_HTML: &str = include_str!("../assets/index.html");
+
 use axum::{
     extract::Path,
     http::{header::CONTENT_TYPE, Response, StatusCode},
-    response::IntoResponse,
+    response::{IntoResponse, Html},
 };
+
+pub async fn index() -> impl IntoResponse {
+    Html(INDEX_HTML)
+}
 
 pub async fn health_check() -> impl IntoResponse {
     "Ok"
