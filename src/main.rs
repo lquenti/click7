@@ -28,12 +28,30 @@
 *   - [ ] Add a more beautiful and descriptive website
 * - [ ] Create the actual API after the DB is working
 *
-* ## sqlite
-* todo
+* ## kv store
+* - [x] design kv store
+*   - Two different possibilites:
+*     - Memory only: big HashMap, (de-)serialized on close.
+*       - Support an interval where it will be written back periodically
+*         - TODO figure out how we can do it without locking
+*     - persistent:
+*       - redb for persistence
+*       - write-back caching with LRU cache
+*         - size configurable
+*       - force write-back on close
+* - [ ] Write on README
+* - [ ] Create CLI arguments
+*   - [ ] decide on a default
+* - [ ] Write trait
+* - [ ] impl mem
+*   - [ ] TODO decide what to do when its full
+* - [ ] impl i/o
+*   - [ ] 
  */
 
 mod cli;
 mod img_gen;
+mod kv_store;
 mod routes;
 
 use crate::cli::Args;
