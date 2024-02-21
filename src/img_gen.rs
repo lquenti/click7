@@ -59,20 +59,20 @@ pub fn generate_image(n: u32, max_digits: u8, padding: u32, border: u32) -> Rgba
         digits = vec![9_u8; max_digits as usize];
     } else {
         // cut off last number, add
-        let mut digits_without_prefix = vec![];
         let mut curr = n;
         while curr != 0 {
             let last_digit = (curr % 10) as u8;
-            digits_without_prefix.push(last_digit);
+            digits.push(last_digit);
             curr /= 10;
         }
-        digits_without_prefix.reverse();
+        digits.reverse();
 
         // Fill with zeros on the left
-        let missing_zeros = (max_digits as i32) - (digits_without_prefix.len() as i32);
+        let missing_zeros = (max_digits as i32) - (digits.len() as i32);
+        println!("{}", missing_zeros);
         if missing_zeros > 0 {
             let mut zerovec = vec![0; missing_zeros as usize];
-            zerovec.extend(digits_without_prefix.iter());
+            zerovec.extend(digits.iter());
             digits = zerovec;
         }
     }
