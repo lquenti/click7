@@ -60,6 +60,8 @@ All routes are created dynamically based on the image path you provide. Lets say
 <img src="http://click7server:3000/my_website_page_b" alt="Website counter">
 ```
 
+If you need SSL/HTTPS, you have to reverse proxy it, I can recommend something like [traefik](https://traefik.io/traefik/), although friends also often tell me how great [caddy](https://caddyserver.com/) is.
+
 ## All Routes
 ```
 / -> basic description of the server
