@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use image::{ImageBuffer, ImageError, ImageFormat, Rgba, RgbaImage, ImageEncoder};
+use image::{ImageBuffer, ImageEncoder, ImageError, ImageFormat, Rgba, RgbaImage};
 use lazy_static::lazy_static;
 
 const BLACK: Rgba<u8> = Rgba([0_u8, 0_u8, 0_u8, 255_u8]);

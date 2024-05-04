@@ -24,8 +24,9 @@ pub fn read_and_increment(db: &Database, key: &str) -> Result<u32, redb::Error> 
     let num = {
         let read_txn = db.begin_read()?;
         let table = read_txn.open_table(TABLE)?;
-        table.get(key)?
-            .map(|arg0: AccessGuard<'_, u32>| AccessGuard::value(&arg0)+1)
+        table
+            .get(key)?
+            .map(|arg0: AccessGuard<'_, u32>| AccessGuard::value(&arg0) + 1)
             .unwrap_or(1)
     };
 

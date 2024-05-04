@@ -37,8 +37,8 @@
 
 mod cli;
 mod img_gen;
-mod store;
 mod routes;
+mod store;
 
 use std::sync::Arc;
 
@@ -60,7 +60,7 @@ async fn main() {
     /* load database */
     /* panic intended, if the db doenst load we are fucked */
     let db = store::load_db_if_exist(&args.database).unwrap();
-    
+
     let db_arc = Arc::new(db);
 
     /* Define routes */
@@ -71,11 +71,10 @@ async fn main() {
         .layer(Extension(args))
         .layer(Extension(db_arc));
 
-    let app_without_state = Router::new()
-        .route("/health_check", routing::get(routes::health_check));
+    let app_without_state =
+        Router::new().route("/health_check", routing::get(routes::health_check));
 
     let app = app_with_state.merge(app_without_state);
-
 
     /* start server */
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
