@@ -1,30 +1,3 @@
-/*
-* # TODOs:
-*
-* Too fast moving to bother with GH Issues rn
-*
-* ## General
-* - [ ] Add logging with tracing
-* - [ ] Proper error management with anyhow+thiserror
-* - [ ] Get cargo audit and cargo outdated running
-* - [ ] Write docs
-*
-*
-* ## Image gen
-* - [ ] Make the counter smaller
-*   - [ ] decrease img size
-*   - [ ] decrease padding
-*   - [ ] decrease border size
-* - [ ] Increase contrast (#1)
-*
-* ## KV Store
-* - [x] Add to project
-* - [x] Init DB
-* - [x] Add increment value
-* - [ ] Make sure it is thread-safe
-*   - [ ] describe current state on README
- */
-
 mod cli;
 mod img_gen;
 mod routes;
@@ -67,7 +40,9 @@ async fn main() {
     let app = app_with_state.merge(app_without_state);
 
     /* start server */
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", args.port)).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", args.port))
+        .await
+        .unwrap();
     println!("Running at port {}", args.port);
     axum::serve(listener, app).await.unwrap();
 }
