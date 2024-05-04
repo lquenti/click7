@@ -1,8 +1,14 @@
+use std::path::PathBuf;
+
 use clap::Parser;
 
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Clone)]
 #[command(version, about, long_about = None)]
 pub struct Args {
+    /// The path to the database (should end with .redb)
+    #[arg(long)]
+    pub database: PathBuf,
+
     /// The amount of digits printed
     /// (i.e. 7 digits => 0-9999999)
     #[arg(short, long, default_value_t = 7)]

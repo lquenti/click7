@@ -5,7 +5,6 @@
 *
 * ## General
 * - [ ] Add logging with tracing
-*   - [ ] ALso replace all prints
 * - [ ] Proper error management with anyhow+thiserror
 * - [ ] Get cargo audit and cargo outdated running
 *
@@ -26,42 +25,31 @@
 *  - [x] properly refactor it
 * - [x] add a `/` that explains the project in HTML
 *   - [ ] Add a more beautiful and descriptive website
+*     - [ ] Add cfg details to it
 * - [ ] Create the actual API after the DB is working
 *
-* ## kv store
-* - [x] design kv store
-*   - Two different possibilites:
-*     - Memory only: big HashMap, (de-)serialized on close.
-*       - Support an interval where it will be written back periodically
-*         - TODO figure out how we can do it without locking
-*     - persistent:
-*       - redb for persistence
-*       - write-back caching with LRU cache
-*         - size configurable
-*       - force write-back on close
-* - [ ] Write on README
-* - [ ] Create CLI arguments
-*   - [ ] decide on a default
-* - [ ] Write trait
-* - [ ] impl mem
-*   - [ ] TODO decide what to do when its full
-* - [ ] impl i/o
-*   - [ ] 
+* ## KV Store
+* - [x] Add to project
+* - [ ] Init DB
+* - [ ] Add increment value
+* - [ ] Add default to cli
  */
 
 mod cli;
 mod img_gen;
-mod kv_store;
+mod store;
 mod routes;
 
+use std::sync::Arc;
+
 use crate::cli::Args;
-use axum::{routing, Router};
+use axum::{routing, Extension, Router};
 use clap::Parser;
 
 #[tokio::main]
 async fn main() {
     /* Parse CLI args */
-    let _args = Args::parse();
+    let args = Args::parse();
 
     /* init image generator */
     img_gen::init_lazy_static();
@@ -69,11 +57,25 @@ async fn main() {
         panic!("Not all images have the same height!");
     }
 
+    /* load database */
+    /* panic intended, if the db doenst load we are fucked */
+    let db = store::load_db_if_exist(&args.database).unwrap();
+    
+    let db_arc = Arc::new(db);
+
     /* Define routes */
-    let app = Router::new()
+    let app_with_state = Router::new()
         .route("/", routing::get(routes::index))
-        .route("/health_check", routing::get(routes::health_check))
-        .route("/generate/:number", routing::get(routes::generate));
+        .route("/generate/:number", routing::get(routes::generate))
+        .route("/cnt/:id", routing::get(routes::counter))
+        .layer(Extension(args))
+        .layer(Extension(db_arc));
+
+    let app_without_state = Router::new()
+        .route("/health_check", routing::get(routes::health_check));
+
+    let app = app_with_state.merge(app_without_state);
+
 
     /* start server */
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

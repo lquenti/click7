@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use image::{ImageBuffer, ImageError, ImageFormat, Rgba, RgbaImage};
+use image::{ImageBuffer, ImageError, ImageFormat, Rgba, RgbaImage, ImageEncoder};
 use lazy_static::lazy_static;
 
 const BLACK: Rgba<u8> = Rgba([0_u8, 0_u8, 0_u8, 255_u8]);
@@ -69,7 +69,6 @@ pub fn generate_image(n: u32, max_digits: u8, padding: u32, border: u32) -> Rgba
 
         // Fill with zeros on the left
         let missing_zeros = (max_digits as i32) - (digits.len() as i32);
-        println!("{}", missing_zeros);
         if missing_zeros > 0 {
             let mut zerovec = vec![0; missing_zeros as usize];
             zerovec.extend(digits.iter());
@@ -123,4 +122,16 @@ pub fn generate_image(n: u32, max_digits: u8, padding: u32, border: u32) -> Rgba
     }
 
     grey_background
+}
+
+pub fn save_to_png(img: RgbaImage) -> Result<Vec<u8>, ImageError> {
+    let mut bytes: Vec<u8> = vec![];
+
+    image::codecs::png::PngEncoder::new(&mut bytes).write_image(
+        &img,
+        img.width(),
+        img.height(),
+        image::ColorType::Rgba8,
+    )?;
+    Ok(bytes)
 }
