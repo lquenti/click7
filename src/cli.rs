@@ -21,4 +21,8 @@ pub struct Args {
     /// The thickness of the grey border
     #[arg(short, long, default_value_t = 20)]
     pub border: u32,
+
+    /// port
+    #[arg(long, default_value_t = 3000)]
+    pub port: u32,
 }

@@ -7,6 +7,7 @@
 * - [ ] Add logging with tracing
 * - [ ] Proper error management with anyhow+thiserror
 * - [ ] Get cargo audit and cargo outdated running
+* - [ ] Write docs
 *
 *
 * ## Image gen
@@ -14,8 +15,7 @@
 *   - [ ] decrease img size
 *   - [ ] decrease padding
 *   - [ ] decrease border size
-* - [ ] Add a standalone binary that just creates the img
-*   - [ ] Publish that one on crates.io already
+* - [ ] Increase contrast (#1)
 *
 * ## REST API
 * - [x] Find out a Rust framework to use
@@ -26,13 +26,14 @@
 * - [x] add a `/` that explains the project in HTML
 *   - [ ] Add a more beautiful and descriptive website
 *     - [ ] Add cfg details to it
-* - [ ] Create the actual API after the DB is working
+* - [x] Create the actual API after the DB is working
 *
 * ## KV Store
 * - [x] Add to project
-* - [ ] Init DB
-* - [ ] Add increment value
-* - [ ] Add default to cli
+* - [x] Init DB
+* - [x] Add increment value
+* - [ ] Make sure it is thread-safe
+*   - [ ] describe current state on README
  */
 
 mod cli;
@@ -65,18 +66,19 @@ async fn main() {
 
     /* Define routes */
     let app_with_state = Router::new()
-        .route("/", routing::get(routes::index))
         .route("/generate/:number", routing::get(routes::generate))
         .route("/cnt/:id", routing::get(routes::counter))
-        .layer(Extension(args))
+        .layer(Extension(args.clone()))
         .layer(Extension(db_arc));
 
-    let app_without_state =
-        Router::new().route("/health_check", routing::get(routes::health_check));
+    let app_without_state = Router::new()
+        .route("/", routing::get(routes::index))
+        .route("/health_check", routing::get(routes::health_check));
 
     let app = app_with_state.merge(app_without_state);
 
     /* start server */
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", args.port)).await.unwrap();
+    println!("Running at port {}", args.port);
     axum::serve(listener, app).await.unwrap();
 }
