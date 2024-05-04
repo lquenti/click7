@@ -17,17 +17,6 @@
 *   - [ ] decrease border size
 * - [ ] Increase contrast (#1)
 *
-* ## REST API
-* - [x] Find out a Rust framework to use
-* - [x] Get a health check API endpoint returning 200
-* - [x] Find out how to return an Image
-* - [x] Create a debug endpoint where one can query any number and get it
-*  - [x] properly refactor it
-* - [x] add a `/` that explains the project in HTML
-*   - [ ] Add a more beautiful and descriptive website
-*     - [ ] Add cfg details to it
-* - [x] Create the actual API after the DB is working
-*
 * ## KV Store
 * - [x] Add to project
 * - [x] Init DB
